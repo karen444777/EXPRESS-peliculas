@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NESFLIS</title>
+    <!-- Agregar el ícono de Netflix -->
+    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        h1 {
+            color: #b80000;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 60%;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background-color: #b80000;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .search-button:hover {
+            background-color: #ff0000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #fff;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #b80000;
+            color: #fff;
+        }
+        td {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
+        img {
+            max-width: 100px;
+            max-height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Buscador de Películas -->
+    <div class="search-container">
+        <input type="text" id="search-input" class="search-input" placeholder="Buscar películas...">
+        <button onclick="searchMovies()" class="search-button">Buscar</button>
+    </div>
+
+    <!-- Lista de películas -->
+    <div id="lista-peliculas">
+        <h2>Catálogo de Películas</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Año</th>
+                    <th>Director</th>
+                    <th>Actores</th>
+                    <th>Imagen</th>
+                    <!-- Si eres administrador, puedes agregar aquí una columna para acciones adicionales -->
+                </tr>
+            </thead>
+            <tbody id="tabla-peliculas">
+                <% peliculas.forEach(pelicula => { %>
+                    <tr>
+                        <td><%= pelicula.nombre %></td>
+                        <td><%= pelicula.anio %></td>
+                        <td><%= pelicula.director %></td>
+                        <td><%= pelicula.actores.join(', ') %></td>
+                        <td><img src="<%= pelicula.imagen %>" alt="Imagen de la película"></td>
+                        <!-- Si eres administrador, puedes agregar aquí botones para acciones adicionales -->
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Script para interactuar con el servidor y mostrar las películas -->
+    <script>
+        // Función para enviar solicitud de búsqueda al servidor
+        function searchMovies() {
+            const searchTerm = document.getElementById('search-input').value;
+            fetch(`/search?query=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tablaPeliculas = document.getElementById('tabla-peliculas');
+                    tablaPeliculas.innerHTML = ''; // Limpiar la tabla antes de agregar nuevas películas
+                    data.forEach(pelicula => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${pelicula.nombre}</td>
+                            <td>${pelicula.anio}</td>
+                            <td>${pelicula.director}</td>
+                            <td>${pelicula.actores.join(', ')}</td>
+                            <td><img src="${pelicula.imagen}" alt="Imagen de la película"></td>
+                            <!-- Si eres administrador, puedes agregar aquí botones para acciones adicionales -->
+                        `;
+                        tablaPeliculas.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error al buscar películas:', error));
+        }
+    </script>
+</body>
+</html>
+
+
